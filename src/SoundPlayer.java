@@ -3,8 +3,12 @@ import java.awt.Button;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
+import javax.print.attribute.standard.Media;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
@@ -13,6 +17,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+//import javafx.scene.media.MediaPlayer;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -25,17 +30,32 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class SoundPlayer {
 
-	//private static final Encoding PCM_SIGNED = null;
 	
-	private static AudioFormat getOutFormat(AudioFormat inFormat) {
-		int ch = inFormat.getChannels();
-		float rate = inFormat.getSampleRate();	
-		return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 72000, 16, ch, ch * 2, rate,
-				inFormat.isBigEndian());
-	}
+	public static void main(String[] args) throws UnsupportedAudioFileException, IOException {		
+		
+		
+		 try {
+		        File srcFile = new File("Allah1.wav");
+		        FileInputStream in = new FileInputStream(srcFile);
+		        ObjectOutputStream output =  new ObjectOutputStream(new FileOutputStream("gilad-OutPut.bin"));
+		        byte[] buf = new byte[80000];
+		        short[] shortArr = new short[buf.length/2];
+		        in.read(buf);
+		        for (int i = 0; i <buf.length/2 ; i++)
+		        {
+		            output.writeShort( (short)( ( buf[i*2] & 0xff )|( buf[i*2 + 1] << 8 ) ) );
+		            shortArr[i] = ( (short)( ( buf[i*2] & 0xff )|( buf[i*2 + 1] << 8 ) ) );
+		        }
+   System.out.println(buf[5]+"  "+buf[10]+"  "+ buf[70]);
+		        in.close();
 
-	public static void main(String[] args) throws UnsupportedAudioFileException, IOException {
+		    } catch (Exception e) {
+		        System.err.println(e);
 
+		    }
+		 
+		// AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
+		  //  	    new File("Allah1.wav"));
 		/*Modification of sound file
 		 * Doesn't work
 		 */
@@ -54,7 +74,7 @@ public class SoundPlayer {
 		
 		//read sound file and play it
 		
-		JFrame frame=new JFrame();
+		/*JFrame frame=new JFrame();
 		frame.setLocation(100,100);
 		frame.setSize(1000, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
